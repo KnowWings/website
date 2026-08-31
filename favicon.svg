@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" role="img" aria-labelledby="title desc">
+  <title id="title">KnowWings KW monogram</title>
+  <desc id="desc">A geometric off-white K and teal W on a deep navy square.</desc>
+  <rect x="0.5" y="0.5" width="15" height="15" rx="3" fill="#0B1F3A" stroke="#F8FAFC"/>
+  <path fill="#F8FAFC" d="M2.5 3H5v4.5L8 3h2L6.5 8 10 13H7.5L5 9v4H2.5z"/>
+  <path fill="#13B8A6" d="M8 3h2l1 7 1-5h1l1 5 1-7h1l-1 10h-2l-1-4-1 4H9z"/>
+</svg>
