@@ -1,0 +1,2 @@
+KnowWings V2 preview deployment trigger.
+This file has no effect on the website and exists only to trigger the initial Git-connected Vercel preview deployment.
