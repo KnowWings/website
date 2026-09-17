@@ -5,6 +5,15 @@ const root = process.cwd();
 const out = path.join(root, 'dist');
 const excludedTopLevel = new Set(['.git', '.github', 'node_modules', 'dist', 'scripts', 'package.json', 'package-lock.json', 'vercel.json']);
 
+
+const shouldInjectToolbar =
+  process.env.VERCEL_ENV === 'preview' &&
+  process.env.VERCEL_GIT_COMMIT_REF === 'vercel-toolbar-test' &&
+  process.env.VERCEL_PREVIEW_FEEDBACK_ENABLED === '1';
+
+// Explicit opt-in for this preview branch while native injection is absent.
+const toolbarScript = '<script defer src="https://vercel.live/_next-live/feedback/feedback.js" data-explicit-opt-in="true" data-owner-id="team_1ewbvLLNsfyHnWSyZAlE4hX2" data-project-id="prj_dqd5JlXB646nCc8rmCxyBPoCsffi" data-branch="vercel-toolbar-test"></script>';
+
 async function copyTree(src, dest, depth = 0) {
   await mkdir(dest, { recursive: true });
   for (const name of await readdir(src)) {
@@ -19,7 +28,10 @@ async function copyTree(src, dest, depth = 0) {
     if (!info.isFile()) continue;
     if (name.endsWith('.html')) {
       const html = await readFile(from, 'utf8');
-      await writeFile(to, html);
+      const outputHtml = shouldInjectToolbar && !html.includes('vercel.live/_next-live/feedback/feedback.js')
+        ? html.replace(/<\/body\s*>/i, toolbarScript + '\n</body>')
+        : html;
+      await writeFile(to, outputHtml);
     } else {
       await copyFile(from, to);
     }
@@ -27,4 +39,6 @@ async function copyTree(src, dest, depth = 0) {
 }
 
 await copyTree(root, out);
-console.log('Built Vercel static site without custom toolbar injection so Preview can use Vercel native Toolbar.');
+console.log(shouldInjectToolbar
+  ? 'Built static site with explicit Vercel Toolbar for the test Preview branch.'
+  : 'Built static site without explicit Vercel Toolbar.');
