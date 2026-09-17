@@ -1,9 +1,9 @@
-import { mkdir, readdir, readFile, writeFile, copyFile, stat } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile, copyFile, stat, rm } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.cwd();
 const out = path.join(root, 'dist');
-const excludedTopLevel = new Set(['.git', '.github', 'node_modules', 'dist', 'scripts', 'package.json', 'package-lock.json', 'vercel.json']);
+const excludedTopLevel = new Set(['.git', '.github', 'node_modules', 'dist', 'scripts', 'package.json', 'package-lock.json', 'vercel.json', 'wrangler.jsonc', 'wrangler.json', 'wrangler.toml', '.wrangler', '.vercel', '.gitignore', '.vercel-preview-trigger', 'README.md', 'bun.lock', 'bun.lockb']);
 
 
 const shouldInjectToolbar =
@@ -38,6 +38,8 @@ async function copyTree(src, dest, depth = 0) {
   }
 }
 
+// Rebuild from scratch so removed files cannot remain in the deployed output.
+await rm(out, { recursive: true, force: true });
 await copyTree(root, out);
 console.log(shouldInjectToolbar
   ? 'Built static site with explicit Vercel Toolbar for the test Preview branch.'
