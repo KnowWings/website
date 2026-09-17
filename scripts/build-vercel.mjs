@@ -5,14 +5,22 @@ const root = process.cwd();
 const out = path.join(root, 'dist');
 const excludedTopLevel = new Set(['.git', '.github', 'node_modules', 'dist', 'scripts', 'package.json', 'package-lock.json', 'vercel.json', 'wrangler.jsonc', 'wrangler.json', 'wrangler.toml', '.wrangler', '.vercel', '.gitignore', '.vercel-preview-trigger', 'README.md', 'bun.lock', 'bun.lockb']);
 
-
 const shouldInjectToolbar =
   process.env.VERCEL_ENV === 'preview' &&
   process.env.VERCEL_GIT_COMMIT_REF === 'vercel-toolbar-test' &&
   process.env.VERCEL_PREVIEW_FEEDBACK_ENABLED === '1';
 
-// Explicit opt-in for this preview branch while native injection is absent.
 const toolbarScript = '<script defer src="https://vercel.live/_next-live/feedback/feedback.js" data-explicit-opt-in="true" data-owner-id="team_1ewbvLLNsfyHnWSyZAlE4hX2" data-project-id="prj_dqd5JlXB646nCc8rmCxyBPoCsffi" data-branch="vercel-toolbar-test"></script>';
+
+const footerLinks = '<div class="wrap" style="display:flex;gap:18px;flex-wrap:wrap;padding-top:14px"><a href="/careers/">Careers</a><a href="/privacy/">Privacy policy</a></div>';
+
+function addFooterLinks(html) {
+  if (html.includes('href="/careers/"') && html.includes('href="/privacy/"')) return html;
+  if (/<\/footer\s*>/i.test(html)) {
+    return html.replace(/<\/footer\s*>/i, footerLinks + '</footer>');
+  }
+  return html.replace(/<\/body\s*>/i, '<footer>' + footerLinks + '</footer></body>');
+}
 
 async function copyTree(src, dest, depth = 0) {
   await mkdir(dest, { recursive: true });
@@ -27,10 +35,10 @@ async function copyTree(src, dest, depth = 0) {
     }
     if (!info.isFile()) continue;
     if (name.endsWith('.html')) {
-      const html = await readFile(from, 'utf8');
-      const outputHtml = shouldInjectToolbar && !html.includes('vercel.live/_next-live/feedback/feedback.js')
-        ? html.replace(/<\/body\s*>/i, toolbarScript + '\n</body>')
-        : html;
+      let outputHtml = addFooterLinks(await readFile(from, 'utf8'));
+      if (shouldInjectToolbar && !outputHtml.includes('vercel.live/_next-live/feedback/feedback.js')) {
+        outputHtml = outputHtml.replace(/<\/body\s*>/i, toolbarScript + '\n</body>');
+      }
       await writeFile(to, outputHtml);
     } else {
       await copyFile(from, to);
@@ -38,9 +46,8 @@ async function copyTree(src, dest, depth = 0) {
   }
 }
 
-// Rebuild from scratch so removed files cannot remain in the deployed output.
 await rm(out, { recursive: true, force: true });
 await copyTree(root, out);
 console.log(shouldInjectToolbar
-  ? 'Built static site with explicit Vercel Toolbar for the test Preview branch.'
-  : 'Built static site without explicit Vercel Toolbar.');
+  ? 'Built static site with footer links and explicit Vercel Toolbar for the test Preview branch.'
+  : 'Built static site with Careers and Privacy links in page footers.');
