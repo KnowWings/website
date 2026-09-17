@@ -5,7 +5,14 @@ const root = process.cwd();
 const out = path.join(root, 'dist');
 const excludedTopLevel = new Set(['.git', '.github', 'node_modules', 'dist', 'scripts', 'package.json', 'package-lock.json', 'vercel.json']);
 
-const toolbar = `<script async src="https://vercel.live/_next-live/feedback/feedback.js" data-explicit-opt-in="true" data-owner-id="team_LU8IUSQdZE88J30B5TkTe1mS" data-project-id="prj_dqd5JlXB646nCc8rmCxyBPoCsffi" data-branch="main"></script>`;
+
+const shouldInjectToolbar =
+  process.env.VERCEL_ENV === 'preview' &&
+  process.env.VERCEL_GIT_COMMIT_REF === 'vercel-toolbar-test' &&
+  process.env.VERCEL_PREVIEW_FEEDBACK_ENABLED === '1';
+
+// Explicit opt-in for this preview branch while native injection is absent.
+const toolbarScript = '<script defer src="https://vercel.live/_next-live/feedback/feedback.js" data-explicit-opt-in="true" data-owner-id="team_1ewbvLLNsfyHnWSyZAlE4hX2" data-project-id="prj_dqd5JlXB646nCc8rmCxyBPoCsffi" data-branch="vercel-toolbar-test"></script>';
 
 async function copyTree(src, dest, depth = 0) {
   await mkdir(dest, { recursive: true });
@@ -20,11 +27,11 @@ async function copyTree(src, dest, depth = 0) {
     }
     if (!info.isFile()) continue;
     if (name.endsWith('.html')) {
-      let html = await readFile(from, 'utf8');
-      if (!html.includes('vercel.live/_next-live/feedback/feedback.js')) {
-        html = html.includes('</body>') ? html.replace('</body>', `${toolbar}</body>`) : `${html}\n${toolbar}\n`;
-      }
-      await writeFile(to, html);
+      const html = await readFile(from, 'utf8');
+      const outputHtml = shouldInjectToolbar && !html.includes('vercel.live/_next-live/feedback/feedback.js')
+        ? html.replace(/<\/body\s*>/i, toolbarScript + '\n</body>')
+        : html;
+      await writeFile(to, outputHtml);
     } else {
       await copyFile(from, to);
     }
@@ -32,4 +39,6 @@ async function copyTree(src, dest, depth = 0) {
 }
 
 await copyTree(root, out);
-console.log('Built Vercel static site with toolbar enabled on all HTML pages.');
+console.log(shouldInjectToolbar
+  ? 'Built static site with explicit Vercel Toolbar for the test Preview branch.'
+  : 'Built static site without explicit Vercel Toolbar.');
