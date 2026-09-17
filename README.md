@@ -73,3 +73,7 @@ KnowWings helps organizations:
 ---
 
 © 2026 KnowWings. All rights reserved.
+
+## Build and publishing
+
+Run `npm run build` to prepare `dist/`. Cloudflare publishes the site from GitHub. `npm run deploy` remains available for an authorized manual Cloudflare deployment. Netlify and Vercel preview configuration and the duplicate GitHub Pages workflow have been removed.

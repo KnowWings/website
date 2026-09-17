@@ -2,8 +2,8 @@
   "name": "knowwings-website",
   "private": true,
   "scripts": {
-    "build": "node scripts/build-vercel.mjs",
-    "postinstall": "node scripts/build-vercel.mjs",
+    "build": "node scripts/build.mjs",
+    "postinstall": "node scripts/build.mjs",
     "deploy": "npm run build && wrangler deploy"
   }
 }
