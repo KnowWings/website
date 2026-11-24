@@ -1,0 +1,133 @@
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("/assets/instrument-serif-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("/assets/instrument-serif-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/jetbrains-mono.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+.challenge {
+  --challenge-navy: #141f35;
+  --challenge-blue: #007fff;
+  --challenge-serif: "Instrument Serif", Georgia, serif;
+  --challenge-mono: "JetBrains Mono", ui-monospace, monospace;
+  padding: clamp(58px, 6.2vw, 106px) 0;
+  background: #f7f8fa;
+  color: var(--challenge-navy);
+}
+
+.challenge-inner {
+  max-width: 1180px;
+}
+
+.challenge-label, .challenge-number {
+  color: #1754a9;
+  font-family: var(--challenge-mono);
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .085em;
+}
+
+.challenge-label {
+  margin: 0 0 18px;
+}
+
+.challenge h2, .challenge h3 {
+  margin: 0;
+  font-family: var(--challenge-serif);
+  font-weight: 400;
+  text-wrap: pretty;
+}
+
+.challenge h2 {
+  max-width: 27ch;
+  font-size: clamp(2.68rem, 5.2vw, 5.15rem);
+  line-height: 1.02;
+}
+
+.challenge h2 em, .challenge-transition em {
+  color: var(--challenge-blue);
+  font-style: italic;
+}
+
+.challenge-summary {
+  max-width: 69ch;
+  margin: 22px 0 0;
+  color: #43516a;
+  font-size: clamp(1rem, 1.35vw, 1.17rem);
+  line-height: 1.65;
+}
+
+.challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(25px, 3.6vw, 54px) clamp(28px, 5vw, 76px);
+  margin: clamp(34px, 5vw, 70px) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.challenge-grid li {
+  padding-top: 14px;
+  border-top: 1px solid #88b8f1;
+}
+
+.challenge-number {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.challenge-grid h3 {
+  font-size: clamp(1.95rem, 3vw, 2.85rem);
+  line-height: 1.08;
+}
+
+.challenge-grid p {
+  max-width: 58ch;
+  margin: 9px 0 0;
+  color: #43516a;
+  line-height: 1.65;
+}
+
+.challenge-transition {
+  padding: clamp(25px, 4.6vw, 64px);
+  border-radius: clamp(16px, 2vw, 26px);
+  background: var(--challenge-navy);
+  color: #fff;
+}
+
+.challenge-transition .challenge-label {
+  color: #bcd6fb;
+}
+
+.challenge-transition h3 {
+  font-size: clamp(2.2rem, 4.2vw, 4.15rem);
+  line-height: 1.05;
+}
+
+.challenge-transition .challenge-summary {
+  margin-top: 16px;
+  color: #e0e8f7;
+}
+
+@media (max-width: 640px) {
+  .challenge-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
